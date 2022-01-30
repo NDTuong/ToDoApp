@@ -3,15 +3,19 @@ package com.example.todooo.Fragment;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,11 +45,16 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -68,7 +77,9 @@ public class SettingsFragment extends Fragment {
     // instance for firebase storage and StorageReference
     FirebaseStorage storage;
     StorageReference storageReference;
+    StorageReference image;
 
+    String path = "/data/user/0/com.example.todooo/app_imageDir/";
 
     FirebaseAuth mAuth;
     DatabaseReference mDatabase;
@@ -120,6 +131,26 @@ public class SettingsFragment extends Fragment {
         // get the Firebase  storage reference
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
+        image = storage.getReference().child("images/" + UID + ".png");
+        loadImageFromStorage(path,imageView);
+        try {
+            File file = File.createTempFile("image", ".png");
+            image.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                    saveToInternalStorage(bitmap);
+//                    imageView.setImageBitmap(bitmap);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         imageView.setOnClickListener(v -> {
             if(ActivityCompat.checkSelfPermission(getActivity(),
@@ -132,9 +163,9 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-
         return view;
     }
+
 
     private void startGallery() {
         Intent cameraIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -153,6 +184,7 @@ public class SettingsFragment extends Fragment {
                 Bitmap bitmapImage = null;
                 try {
                     bitmapImage = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), filePath);
+                    saveToInternalStorage(bitmapImage);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -162,84 +194,6 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-
-    // Select Image method
-    private void SelectImage() {
-
-        // Defining Implicit Intent to mobile gallery
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        requireActivity().startActivityForResult(
-                Intent.createChooser(
-                        intent,
-                        "Select Image from here..."),
-                PICK_IMAGE_REQUEST);
-    }
-
-    //    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        Fragment fragment = getChildFragmentManager().findFragmentByTag("Settings");
-//        if (fragment != null) {
-//            fragment.onActivityResult(requestCode, resultCode, data);
-//            if (requestCode == PICK_IMAGE_REQUEST
-//                    && resultCode == Activity.RESULT_OK
-//                    && data != null
-//                    && data.getData() != null) {
-//                // Get the Uri of data
-//                filePath = data.getData();
-//                try {
-//                    // Setting image on image view using Bitmap
-//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), filePath);
-//                    imageView.setImageBitmap(bitmap);
-//                } catch (IOException e) {
-//                    // Log the exception
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//        }
-//}
-//    // Override onActivityResult method
-//    @Override
-//    public void onActivityResult(int requestCode,
-//                                    int resultCode,
-//                                    Intent data) {
-//
-//        super.onActivityResult(requestCode,
-//                resultCode,
-//                data);
-//
-//        // checking request code and result code
-//        // if request code is PICK_IMAGE_REQUEST and
-//        // resultCode is RESULT_OK
-//        // then set image in the image view
-//        if (requestCode == PICK_IMAGE_REQUEST
-//                && resultCode == Activity.RESULT_OK
-//                && data != null
-//                && data.getData() != null) {
-//
-//            // Get the Uri of data
-//            filePath = data.getData();
-//            try {
-//
-//                // Setting image on image view using Bitmap
-//                Bitmap bitmap = MediaStore
-//                        .Images
-//                        .Media
-//                        .getBitmap(
-//                                getContext().getContentResolver(),
-//                                filePath);
-//                imageView.setImageBitmap(bitmap);
-//            }
-//
-//            catch (IOException e) {
-//                // Log the exception
-//                Log.d("EEE", "onActivityResult: ");
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
     // UploadImage method
     private void uploadImage() {
@@ -264,6 +218,46 @@ public class SettingsFragment extends Fragment {
                 }
             });
         }
+    }
+
+    private String saveToInternalStorage(Bitmap bitmapImage){
+        ContextWrapper cw = new ContextWrapper(getContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        File myPath=new File(directory,UID + ".png");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(myPath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return directory.getAbsolutePath();
+    }
+
+    private void loadImageFromStorage(String path, ImageView iv)
+    {
+
+        try {
+            File f=new File(path, UID + ".png");
+            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+//            ImageView img=(ImageView)findViewById(R.id.imgPicker);
+            iv.setImageBitmap(b);
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
     private void updatePassWord(String email, FirebaseUser currentUser) {

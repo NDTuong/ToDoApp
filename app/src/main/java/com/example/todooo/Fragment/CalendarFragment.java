@@ -2,6 +2,8 @@ package com.example.todooo.Fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,9 +32,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.shrikanthravi.collapsiblecalendarview.data.Day;
 import com.shrikanthravi.collapsiblecalendarview.widget.CollapsibleCalendar;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class CalendarFragment extends Fragment {
@@ -50,6 +57,8 @@ public class CalendarFragment extends Fragment {
     DatabaseReference mDatabase;
     FirebaseAuth mAuth;
     String today;
+    CircleImageView imageView;
+    String path = "/data/user/0/com.example.todooo/app_imageDir/";
 
     private final static String TAG = "Calendar Fragment";
     String UID;
@@ -85,6 +94,9 @@ public class CalendarFragment extends Fragment {
         getData(today);
         rcvViewCalendarAdapter.setData(taskList, UID);
         rcvCalendar.setAdapter(rcvViewCalendarAdapter);
+
+        imageView = view.findViewById(R.id.ivAvatar);
+        loadImageFromStorage(path, imageView);
 
         collapsibleCalendar = view.findViewById(R.id.calendarView);
         collapsibleCalendar.getTodayItemPosition();
@@ -229,5 +241,21 @@ public class CalendarFragment extends Fragment {
         });
         rcvViewCalendarAdapter.setData(taskList, UID);
         rcvCalendar.setAdapter(rcvViewCalendarAdapter);
+    }
+
+    private void loadImageFromStorage(String path, ImageView iv)
+    {
+
+        try {
+            File f=new File(path, UID + ".png");
+            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+//            ImageView img=(ImageView)findViewById(R.id.imgPicker);
+            iv.setImageBitmap(b);
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+
     }
 }

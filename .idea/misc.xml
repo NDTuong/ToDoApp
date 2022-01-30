@@ -6,6 +6,8 @@
         <entry key="..\:/TodoApp/app/src/main/res/drawable-v24/backgroup_spinner_popup.xml" value="0.2128205128205128" />
         <entry key="..\:/TodoApp/app/src/main/res/drawable-v24/ic_add_alert.xml" value="0.2128205128205128" />
         <entry key="..\:/TodoApp/app/src/main/res/layout/activity_alarm.xml" value="0.2" />
+        <entry key="..\:/TodoApp/app/src/main/res/layout/bottom_sheet_add_task.xml" value="0.2" />
+        <entry key="..\:/TodoApp/app/src/main/res/layout/fragment_calendar.xml" value="0.2" />
         <entry key="..\:/TodoApp/app/src/main/res/menu/menu_bottom_app_bar.xml" value="0.2" />
       </map>
     </option>

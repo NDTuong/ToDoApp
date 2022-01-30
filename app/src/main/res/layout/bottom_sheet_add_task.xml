@@ -118,13 +118,13 @@
 
             <ImageView
                 android:id="@+id/ivAddTask"
-                android:gravity="end"
-                android:layout_gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ic_baseline_send_24"
+                android:layout_gravity="center_vertical"
                 android:layout_marginEnd="15dp"
-                android:backgroundTint="@color/primary_color" />
+                android:background="@drawable/ic_baseline_send_24"
+                android:backgroundTint="@color/primary_color"
+                android:gravity="end" />
         </LinearLayout>
 
     </LinearLayout>
