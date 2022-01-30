@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+
+
+    <!--    MY COLOR-->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="primary_color">#FA4942</color>
+    <color name="primary_color_tint10">#FB5550</color>
+    <color name="primary_color_tint40">#FC7C78</color>
+    <color name="primary_color_tint80">#FDB1AE</color>
+    <color name="primary_color_tint100">#FECBC9</color>
+    <color name="primary_color_tint120">#FEE5E4</color>
+    <color name="primary_color_dark10">#FA332C</color>
+
+    <!--    Priority Color-->
+    <color name="priority1">#e53935</color>
+    <color name="priority3">#43a047</color>
+    <color name="priority2">#fdd835</color>
+
+    <color name="grey700">#757575</color>
+    <color name="grey500">#bdbdbd</color>
+    <color name="grey100">#f5f5f5</color>
+    <color name="grey50">#fafafa</color>
+
+
+
+
+
+    <color name="red200">#ef9a9a</color>
+    <color name="pink200">#f48fb1</color>
+    <color name="purple200">#ce93d8</color>
+    <color name="deep_purple200">#b39ddb</color>
+    <color name="indigo200">#9fa8da</color>
+    <color name="blue200">#90caf9</color>
+    <color name="light_blue200">#81d4fa</color>
+    <color name="cyan200">#80deea</color>
+    <color name="teal200">#80cbc4</color>
+    <color name="green200">#a5d6a7</color>
+    <color name="light_green200">#c5e1a5</color>
+    <color name="lime200">#e6ee9c</color>
+    <color name="yellow200">#fff59d</color>
+    <color name="amber200">#ffe082</color>
+    <color name="orange200">#ffcc80</color>
+    <color name="deep_orange200">#ffab91</color>
+    <color name="brown200">#bcaaa4</color>
+    <color name="grey200">#eeeeee</color>
+    <color name="blue_grey200">#b0bec5</color>
+</resources>

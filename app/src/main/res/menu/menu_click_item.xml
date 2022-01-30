@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menuDelete"
+        android:title="@string/delete_task"
+        android:icon="@drawable/ic_delete" />
+
+    <item android:id="@+id/menuCompleted"
+        android:title="@string/mark_completed"
+        android:icon="@drawable/ic_done" />
+
+    <item android:id="@+id/menuReschedule"
+        android:title="@string/reschedule"
+        android:icon="@drawable/ic_schedule" />
+
+</menu>

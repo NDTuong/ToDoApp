@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ToDo</string>
+
+    <!--    Bottom Nav Menu-->
+    <string name="menu_calendar">Lịch</string>
+    <string name="menu_task">Công việc</string>
+    <string name="menu_settings">Cá nhân</string>
+
+    <!--    Calendar Fragment-->
+    <string name="default_hello">Chào buổi sáng,</string>
+    <string name="default_name">Nguyễn Duy Tường</string>
+
+    <!--    Item Task-->
+    <string name="title_default">Tiêu đề</string>
+    <string name="descriptions">Không có ghi chú...</string>
+    <string name="tag">thẻ</string>
+    <string name="priority">Mức ưu tiên</string>
+
+    <!--    Menu click item-->
+    <string name="delete_task">Xóa</string>
+    <string name="mark_completed">Đã hoàn thành</string>
+    <string name="reschedule">Lên lịch lại</string>
+
+    <!--    AlertDialog-->
+    <string name="confirmation_delete">Xác nhận xóa</string>
+    <string name="sure_delete">Bạn chắc chắn muốn xóa công việc này?</string>
+    <string name="yes">Đồng ý</string>
+    <string name="no">Đóng</string>
+    <string name="confirmation_completed">Đã hoàn thành!</string>
+    <string name="sure_to_mark_as_complete">Bạn chắc chắn muốn đánh dấu là đã hoàn thành công việc này?</string>
+
+    <!--    Bottom Sheet Add Task-->
+    <string name="add_new_task">Nhập tên công việc</string>
+    <string name="input_the_sub_task">Nhập tên tác vụ</string>
+    <string name="add_sub_task">Thêm tác vụ</string>
+
+    <!--    Dialog schedule-->
+    <string name="reminder_at">Nhắc nhở</string>
+    <string name="default_no_dialog_schedule">Không</string>
+    <string name="repeat">Lặp lại</string>
+    <string name="btn_cancel">HỦY</string>
+    <string name="btn_done">XONG</string>
+    <string name="no_date">Không</string>
+    <string name="btn_clear">XÓA</string>
+    <string name="reminder_type">Loại nhắc nhở</string>
+
+    <!--    DateTime Picker-->
+    <string name="set_date">Đặt ngày</string>
+    <string name="set_time">Đặt giờ</string>
+
+    <!--    Menu Notify type-->
+    <string name="notification">Thông báo</string>
+    <string name="alarm">Báo thức</string>
+
+    <!--    Menu Priority type-->
+    <string name="normal">Bình thường</string>
+    <string name="medium">Trung bình</string>
+    <string name="high">Cao</string>
+
+    <!--    Menu Day Repeat-->
+    <!--    Menu Day Repeat-->
+    <string name="_1_day">1 Ngày</string>
+    <string name="_2_days">2 Ngày</string>
+    <string name="_3_days">3 Ngày</string>
+    <string name="_4_days">4 Ngày</string>
+    <string name="_5_days">5 Ngày</string>
+    <string name="_6_days">6 Ngày</string>
+    <string name="other">Khác</string>
+    <string name="days">Ngày.</string>
+    <!--    Menu Week Repeat-->
+    <string name="_1_week">1 Tuần</string>
+    <string name="_2_weeks">2 Tuần</string>
+    <string name="_3_week">3 Tuần</string>
+    <string name="weeks">Tuần.</string>
+
+    <!--    Menu Year Repeat-->
+    <string name="_1_year">1 Năm</string>
+    <string name="_2_years">2 Năm</string>
+    <string name="_3_years">3 Năm</string>
+    <string name="years">Năm.</string>
+
+    <!--    Menu Month Repeat-->
+    <string name="_1_month">1 Tháng</string>
+    <string name="_2_months">2 Tháng</string>
+    <string name="_3_months">3 Tháng</string>
+    <string name="months">Tháng.</string>
+
+
+    <string name="mo">T2</string>
+    <string name="tu">T3</string>
+    <string name="we">T4</string>
+    <string name="th">T5</string>
+    <string name="fr">T6</string>
+    <string name="sa">T7</string>
+    <string name="su">CN</string>
+
+    <string name="error_input_repeat_every">Không thể chọn số lớn hơn 1000</string>
+    <string name="error_reminder_type">Reminder time is empty</string>
+    <string name="no_tag">No Tag</string>
+    <string name="add_new_tag">Add New Tag</string>
+    <!--    Add task error-->
+    <string name="add_new_task_error">Task Name Empty!!!</string>
+    <string name="add_new_tag_error">The tag name must be less than 50 characters!</string>
+    <string name="add_new_tag_error_empty">Tag name is empty!</string>
+    <string name="add_to_database_error">Add Failure!!!</string>
+    <string name="mark_as_unfinished">Mark as unfinished</string>
+    <string name="all">All</string>
+    <string name="filter_spinner_completed">Completed</string>
+    <string name="filter_spinner_incomplete">Incompleted</string>
+    <string name="tag_management">Tag management</string>
+    <string name="edit">Edit</string>
+
+    <!--    login signup-->
+    <string name="enter_your_email">Enter your email</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign up</string>
+    <string name="forget_password">Forget Password?</string>
+    <string name="empty_email">Email is empty</string>
+    <string name="empty_password">Password is empty</string>
+    <string name="login_failed">Login Failure!!!</string>
+    <string name="btn_send">Send</string>
+    <string name="send_email_success">Send success!!! Please check your email</string>
+    <string name="send_email_failure">Send failure!!! Please check your email address</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="confirm_your_password">Confirm your password</string>
+    <string name="empty_name">Name is empty</string>
+    <string name="short_password">Password must be at least 6 characters long</string>
+    <string name="not_match_password">Password did not match!!!</string>
+    <string name="log_uot">Log out</string>
+    <string name="sign_up_success">Signup success!!!</string>
+    <string name="sign_up_fail">Signup Failure!!!</string>
+    <string name="update_fail">Update Failure!!!</string>
+    <string name="update_name">Update Name</string>
+    <string name="update_email">Update Name</string>
+    <string name="update_password">Update Name</string>
+    <string name="enter_password">Enter password</string>
+    <string name="enter_old_password">Enter old password</string>
+    <string name="update_success">Update Succedss</string>
+    <string name="error_pass">Wrong password</string>
+
+</resources>

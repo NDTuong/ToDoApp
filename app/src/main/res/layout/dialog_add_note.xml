@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="30dp"
+    android:background="@drawable/round_background_1"
+    android:backgroundTint="@color/primary_color_tint120">
+    <EditText
+        android:id="@+id/noteInput"
+        android:gravity="start"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/round_background_1"
+        android:backgroundTint="@color/primary_color_tint80"
+        android:layout_margin="20dp"
+        android:padding="10dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="end">
+        <TextView
+            android:id="@+id/tvBtnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:textColor="@color/primary_color_tint40"
+            android:text="@string/btn_cancel"/>
+        <TextView
+            android:id="@+id/tvBtnDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:textColor="@color/primary_color"
+            android:text="@string/btn_done"/>
+    </LinearLayout>
+
+</LinearLayout>
