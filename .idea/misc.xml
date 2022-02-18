@@ -4,7 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/TodoApp/app/src/main/res/drawable-v24/backgroup_spinner_popup.xml" value="0.2128205128205128" />
+        <entry key="..\:/TodoApp/app/src/main/res/drawable-v24/ic_add_alarm.xml" value="0.21614583333333334" />
         <entry key="..\:/TodoApp/app/src/main/res/drawable-v24/ic_add_alert.xml" value="0.2128205128205128" />
+        <entry key="..\:/TodoApp/app/src/main/res/drawable-v24/ic_alarm.xml" value="0.21614583333333334" />
+        <entry key="..\:/TodoApp/app/src/main/res/drawable-v24/ic_arrow_drop_down.xml" value="0.21614583333333334" />
+        <entry key="..\:/TodoApp/app/src/main/res/drawable-v24/ic_arrow_left.xml" value="0.21614583333333334" />
+        <entry key="..\:/TodoApp/app/src/main/res/drawable-v24/ic_arrow_right.xml" value="0.21614583333333334" />
         <entry key="..\:/TodoApp/app/src/main/res/layout/activity_alarm.xml" value="0.2" />
         <entry key="..\:/TodoApp/app/src/main/res/layout/activity_login.xml" value="0.2" />
         <entry key="..\:/TodoApp/app/src/main/res/layout/activity_sign_up.xml" value="0.2" />

@@ -1,16 +1,62 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.TodoApp" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.TodoApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorPrimaryVariant">@color/primary_color_dark10</item>
+        <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/primary_color</item>
+        <item name="colorSecondaryVariant">@color/primary_color_dark10</item>
+        <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="android:fontFamily">@font/nunito_bold</item>
+        <item name="android:popupMenuStyle">@style/popupMenuStyle</item>
+        <item name="alertDialogTheme">@style/DialogStyle</item>
+        <item name="bottomSheetStyle">@style/CustomBottomSheetDialog</item>
+        <!--        <item name="android:timePickerStyle">@style/TimePikerDialogTheme</item>-->
+    </style>
+
+    <!--    <style name="AppTheme.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">-->
+    <!--        &lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+    <!--        <item name="colorPrimary">@color/primary_color</item>-->
+    <!--        <item name="colorPrimaryDark">@color/primary_color_dark10</item>-->
+    <!--        <item name="colorAccent">@color/primary_color</item>-->
+    <!--        <item name="android:textColor">@color/black</item>-->
+    <!--        <item name="titleTextColor">@color/primary_color_dark10</item>-->
+    <!--    </style>-->
+
+    <style name="CustomBottomSheetDialog" parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheet</item>
+    </style>
+
+    <style name="CustomBottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="shapeAppearanceOverlay">@style/CustomShapeAppearanceBottomSheetDialog</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="CustomShapeAppearanceBottomSheetDialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+    <!--    <style name="TimePikerDialogTheme" parent="ThemeOverlay.AppCompat.Dialog">-->
+    <!--        <item name="colorAccent">@color/primary_color_tint40</item>                   &lt;!&ndash;header background&ndash;&gt;-->
+    <!--        <item name="android:windowBackground">@color/primary_color_tint120</item>     &lt;!&ndash;calendar background&ndash;&gt;-->
+    <!--        <item name="android:colorControlActivated">@color/colorAccent</item> &lt;!&ndash;selected day&ndash;&gt;-->
+    <!--        <item name="android:textColorPrimary">@color/colorPrimaryText</item> &lt;!&ndash;days of the month&ndash;&gt;-->
+    <!--        <item name="android:textColorSecondary">@color/colorAccent</item>    &lt;!&ndash;days of the week&ndash;&gt;-->
+    <!--    </style>-->
+
+    <style name="popupMenuStyle" parent="@android:style/Widget.PopupMenu">
+        <item name="android:popupBackground">@drawable/popupmenu_background</item>
+    </style>
+
+    <style name="DialogStyle">
+        <item name="android:windowBackground">@drawable/popupmenu_background</item>
     </style>
 </resources>
