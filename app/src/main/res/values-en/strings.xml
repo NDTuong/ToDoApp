@@ -139,4 +139,8 @@
     <string name="enter_old_password">Enter old password</string>
     <string name="update_success">Update Succedss</string>
     <string name="error_pass">Wrong password</string>
+    <string name="task_detail">Task Detail</string>
+    <string name="due_date">Due date</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_delete">Delete</string>
 </resources>

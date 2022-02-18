@@ -6,8 +6,18 @@
         <entry key="..\:/TodoApp/app/src/main/res/drawable-v24/backgroup_spinner_popup.xml" value="0.2128205128205128" />
         <entry key="..\:/TodoApp/app/src/main/res/drawable-v24/ic_add_alert.xml" value="0.2128205128205128" />
         <entry key="..\:/TodoApp/app/src/main/res/layout/activity_alarm.xml" value="0.2" />
+        <entry key="..\:/TodoApp/app/src/main/res/layout/activity_login.xml" value="0.2" />
+        <entry key="..\:/TodoApp/app/src/main/res/layout/activity_sign_up.xml" value="0.2" />
+        <entry key="..\:/TodoApp/app/src/main/res/layout/activity_tag_management.xml" value="0.2" />
+        <entry key="..\:/TodoApp/app/src/main/res/layout/activity_task_detail.xml" value="0.2" />
         <entry key="..\:/TodoApp/app/src/main/res/layout/bottom_sheet_add_task.xml" value="0.2" />
+        <entry key="..\:/TodoApp/app/src/main/res/layout/dialog_add_note.xml" value="0.2" />
+        <entry key="..\:/TodoApp/app/src/main/res/layout/dialog_forgot_password.xml" value="0.2" />
+        <entry key="..\:/TodoApp/app/src/main/res/layout/dialog_num_input.xml" value="0.2" />
+        <entry key="..\:/TodoApp/app/src/main/res/layout/dialog_schedule_task.xml" value="0.2" />
         <entry key="..\:/TodoApp/app/src/main/res/layout/fragment_calendar.xml" value="0.2" />
+        <entry key="..\:/TodoApp/app/src/main/res/layout/item_calendar.xml" value="0.2" />
+        <entry key="..\:/TodoApp/app/src/main/res/layout/item_subtask.xml" value="0.2" />
         <entry key="..\:/TodoApp/app/src/main/res/menu/menu_bottom_app_bar.xml" value="0.2" />
       </map>
     </option>

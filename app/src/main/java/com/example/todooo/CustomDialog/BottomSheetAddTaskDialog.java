@@ -151,9 +151,6 @@ public class BottomSheetAddTaskDialog extends BottomSheetDialogFragment {
         newTask.setHasDueDate(false); // mặc định là không có ngày đến hạn
         repeat.setType(TypeRepeat.NO_REPEAT); //mặc định là không lặp lại
         newTask.setRepeat(repeat);
-//        newTask.setReminder(reminder);
-//        newTask.setDescriptions(null);
-//        newTask.setSubTask(null);
 
         // SPINNER ADD TAG
         addTag = v.findViewById(R.id.addTagSpinner);
@@ -162,48 +159,16 @@ public class BottomSheetAddTaskDialog extends BottomSheetDialogFragment {
         getData();
         arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.my_spinner, tagList);
         addTag.setAdapter(arrayAdapter);
-//        addTag.setAdapter(new ArrayAdapter<>(getContext(), R.layout.my_spinner, listTag));
         addTag.setSelection(0);
 
 
-
-
-//        mDatabase.child("tag").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                listTag.clear();
-//                listTag.add(getActivity().getString(R.string.no_tag));
-//                for (DataSnapshot snap : snapshot.getChildren()) {
-//                    listTag.add(snap.getValue(String.class));
-//                }
-//                listTag.add(getActivity().getString(R.string.add_new_tag));
-//                addTag.setAdapter(new ArrayAdapter<>(getContext(), R.layout.my_spinner, listTag));
-//                if(isAddNewTask == false){
-//                    addTag.setSelection(0);
-//                } else {
-//                    addTag.setSelection(listTag.size() - 2);
-//                    isAddNewTask = false;
-//                }
         addTag.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         if(addTag.getSelectedItem().toString().equals(ADD_NEW_TASK)){
                             openAddNewTag(mDatabase, addTag);
                             return;
-//                            Log.d(TAG, "Selected TAG: Vào" + isAddNewTask);
-//                            if(isAddNewTask){
-//                                isAddNewTask = false;
-//                                addTag.setSelection(tagList.size()-2);
-//                                newTask.setTag(tagList.get(tagList.size()-2));
-//                                return;
-//                            }
                         }
-//                        if(isAddNewTask){
-//                            newTask.setTag(newTag);
-//                            isAddNewTask = false;
-//                        } else {
-//                            newTask.setTag(tagList.get(position));
-//                        }
                         newTask.setTag(addTag.getSelectedItem().toString());
                         Log.d(TAG, "Selected TAG: " + addTag.getSelectedItem().toString());
                     }
@@ -211,19 +176,9 @@ public class BottomSheetAddTaskDialog extends BottomSheetDialogFragment {
                     public void onNothingSelected(AdapterView<?> parent) {
                     }
                 });
-//                addTag.setOnItemSelectedListener(onItemSelectedListener);
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {}
-//        });
 
         // ADD NOTE
-        ivAddNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openAddNoteDialog(ivAddNote);
-            }
-        });
+        ivAddNote.setOnClickListener(v14 -> openAddNoteDialog(ivAddNote));
 
         // RECYCLE VIEW ĐỂ THÊM SUB - TASK
         itemSubTaskAdapter = new ItemSubTaskAdapter(this);

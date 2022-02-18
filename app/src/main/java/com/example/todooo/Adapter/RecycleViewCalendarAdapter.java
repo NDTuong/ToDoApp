@@ -3,7 +3,9 @@ package com.example.todooo.Adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +21,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todooo.CustomDialog.ScheduleDialog;
+import com.example.todooo.LoginActivity;
 import com.example.todooo.Model.Task;
 import com.example.todooo.Model.TypeRepeat;
 import com.example.todo.R;
+import com.example.todooo.SignUpActivity;
+import com.example.todooo.TaskDetailActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -116,6 +121,20 @@ public class RecycleViewCalendarAdapter extends RecyclerView.Adapter<RecycleView
             public boolean onLongClick(View v) {
                 showPopUpMenu(v, position);
                 return true;
+            }
+        });
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, TaskDetailActivity.class);
+
+                Bundle bundle = new Bundle();
+                //Add your data from getFactualResults method to bundle
+                bundle.putString("TaskID", task.getID());
+                //Add the bundle to the intent
+                intent.putExtras(bundle);
+                context.startActivity(intent);
             }
         });
 

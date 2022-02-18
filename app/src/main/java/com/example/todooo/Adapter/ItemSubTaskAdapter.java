@@ -2,6 +2,7 @@ package com.example.todooo.Adapter;
 
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +14,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todooo.CustomDialog.BottomSheetAddTaskDialog;
 import com.example.todo.R;
+import com.example.todooo.TaskDetailActivity;
 
 import java.util.List;
 
 public class ItemSubTaskAdapter extends RecyclerView.Adapter<ItemSubTaskAdapter.ViewHolder> {
 
     BottomSheetAddTaskDialog context;
+    TaskDetailActivity context2;
     List<String> subtask;
 
     public ItemSubTaskAdapter(BottomSheetAddTaskDialog context){
         this.context = context;
+    }
+    public ItemSubTaskAdapter(TaskDetailActivity context){
+        this.context2 = context;
     }
     public void setData(List<String> subtask) {
         this.subtask = subtask;
@@ -40,15 +46,17 @@ public class ItemSubTaskAdapter extends RecyclerView.Adapter<ItemSubTaskAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         String subTaskName = subtask.get(position);
         holder.tvSubTask.setText(subTaskName);
-        holder.ivDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                subtask.remove(position);
-                if(subtask.size() <= 5){
+        holder.ivDelete.setOnClickListener(v -> {
+            subtask.remove(position);
+            if(subtask.size() <= 5){
+                if(context != null) {
                     context.setWidthScrollView();
                 }
-                notifyDataSetChanged();
+                if(context2 != null) {
+                    context2.setWidthScrollView();
+                }
             }
+            notifyDataSetChanged();
         });
 
     }

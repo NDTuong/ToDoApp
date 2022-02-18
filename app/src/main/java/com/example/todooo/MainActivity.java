@@ -121,13 +121,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         fabAddTask = findViewById(R.id.fabAddTask);
-        fabAddTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                BottomSheetAddTaskDialog bottomSheet = new BottomSheetAddTaskDialog();
-                bottomSheet.show(getSupportFragmentManager(),
-                        "ModalBottomSheet");
-            }
+        fabAddTask.setOnClickListener(v -> {
+            BottomSheetAddTaskDialog bottomSheet = new BottomSheetAddTaskDialog();
+            bottomSheet.show(getSupportFragmentManager(),
+                    "ModalBottomSheet");
         });
 
         //LOAD DATA TASK FROM FIREBASE AND CREATE NOTIFICATIONS
