@@ -1,7 +1,7 @@
 package com.example.todooo;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,8 +24,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -46,17 +47,16 @@ import com.example.todooo.Model.TypeNotifications;
 import com.example.todooo.Model.TypeRepeat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -88,10 +88,21 @@ public class TaskDetailActivity extends AppCompatActivity {
     int checkSize = 0;
     List<String> subtask;
 
+    List<String> tagList;
+    List<String> tagListKey;
+    ArrayAdapter arrayAdapter;
+
+    String ADD_NEW_TASK;
+    String NO_TAG;
+    String tag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
+
+        NO_TAG = getResources().getString(R.string.no_tag);
+        ADD_NEW_TASK = getResources().getString(R.string.add_new_tag);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -102,7 +113,7 @@ public class TaskDetailActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
-        mDatabase = FirebaseDatabase.getInstance().getReference("todo_app/" + UID + "/task");
+        mDatabase = FirebaseDatabase.getInstance().getReference("todo_app/" + UID);
 
         //Get the bundle
         Bundle bundle = getIntent().getExtras();
@@ -147,27 +158,32 @@ public class TaskDetailActivity extends AppCompatActivity {
         ImageView ivPriority = findViewById(R.id.ivPriority);
         ImageView ivShowPriority = findViewById(R.id.ivShowPriority);
 
+        // SUB-TASK
         LinearLayout llAddSubTask = findViewById(R.id.llAddSubTask);
-        llAddSubTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showEditTaskNameDialog(taskID);
-            }
-        });
+        itemSubTaskAdapter = new ItemSubTaskAdapter(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        rcvSubTask.setLayoutManager(linearLayoutManager);
+        llAddSubTask.setOnClickListener(v -> showAddSubTaskDialog(taskID));
 
+        //BACK
         back.setOnClickListener(v -> finish());
+
+        // CLICK TASK NAME
         tvTaskName.setOnClickListener(v -> showEditTaskNameDialog(taskID, taskDetail.getTitle() ));
 
+        // CLICK REMINDER
         llReminder.setOnClickListener(v -> {
             if (!hasDueDate) { return; }
             showDateTimePicker(tvShowReminder, tvShowReminderType);
         });
 
+        // CLICK REMINDER TYPE
         llReminderType.setOnClickListener(v -> {
             if (!hasDueDate) { return; }
             showPopUpMenu(this, v, R.menu.menu_type_notify, tvShowReminderType);
         });
 
+        // CLICK REPEAT
         llRepeat.setOnClickListener(v -> {
             if (!hasDueDate) { return; }
             final RepeatSettingDialog repeatSettingDialog = new RepeatSettingDialog(this);
@@ -190,17 +206,23 @@ public class TaskDetailActivity extends AppCompatActivity {
             repeatSettingDialog.show();
         });
 
+        // CLICK PRIORITY
         llPriority.setOnClickListener(v -> {
             if (!hasDueDate) { return; }
             showPopUpMenu(this, v, R.menu.menu_priority, tvShowPriority, ivShowPriority);
         });
 
+        // CLICK DUE DATE
         Calendar myCalendar= Calendar.getInstance();
-        DatePickerDialog.OnDateSetListener date = (view, year, month, day) -> {
+        DatePickerDialog.OnDateSetListener date = (view, _year, _month, _day) -> {
+            hasDueDate = true;
+            year = _year;
+            month = _month;
+            day = _day;
             myCalendar.set(Calendar.YEAR, year);
             myCalendar.set(Calendar.MONTH,month);
             myCalendar.set(Calendar.DAY_OF_MONTH,day);
-            String dueDate = day + "/" + (month + 1) + "/" + year;
+            String dueDate = checkLessThan10(day) + "/" + checkLessThan10(month + 1) + "/" + year;
             tvShowDueDate.setText(dueDate);
             changeColorImageView(ivReminder, R.color.primary_color);
             changeColorImageView(ivReminderType, R.color.primary_color);
@@ -242,9 +264,29 @@ public class TaskDetailActivity extends AppCompatActivity {
             dialog.show();
         });
 
-        itemSubTaskAdapter = new ItemSubTaskAdapter(this);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
-        rcvSubTask.setLayoutManager(linearLayoutManager);
+        // SPINNER ADD TAG
+        addTag = findViewById(R.id.addTagSpinner);
+        tagList = new ArrayList<>();
+        tagList.add(getResources().getString(R.string.no_tag));
+        getData();
+        arrayAdapter = new ArrayAdapter<>(this, R.layout.my_spinner, tagList);
+        addTag.setAdapter(arrayAdapter);
+//        addTag.setSelection(0);
+        addTag.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        if(addTag.getSelectedItem().toString().equals(ADD_NEW_TASK)){
+                            openAddNewTag(mDatabase, addTag);
+                            return;
+                        }
+//                        newTask.setTag(addTag.getSelectedItem().toString());
+//                        Log.d(TAG, "Selected TAG: " + addTag.getSelectedItem().toString());
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+
 
         btnSave.setOnClickListener(v -> {
             taskDetail.setSubTask(subtask);
@@ -252,7 +294,7 @@ public class TaskDetailActivity extends AppCompatActivity {
             taskDetail.setRepeat(repeat);
             taskDetail.setPriority(mPriority);
             if(hasDueDate) {
-                String dueDate = day + "/" + (month + 1) + "/" + year;
+                String dueDate = checkLessThan10(day) + "/" + checkLessThan10(month + 1) + "/" + year;
                 taskDetail.setDueDate(dueDate);
             } else {
                 taskDetail.setDueDate(null);
@@ -261,110 +303,126 @@ public class TaskDetailActivity extends AppCompatActivity {
 
             String note = noteInput.getText().toString().trim();
             taskDetail.setDescriptions(note);
-
-            mDatabase.child(taskID).setValue(taskDetail);
+            String taskName = tvTaskName.getText().toString();
+            taskDetail.setTitle(taskName);
+            taskDetail.setTag(addTag.getSelectedItem().toString());
+            mDatabase.child("task").child(taskID).setValue(taskDetail);
             finish();
         });
 
-        btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDatabase.child(taskID).removeValue();
-                finish();
-            }
+        btnDelete.setOnClickListener(v -> {
+            mDatabase.child("task").child(taskID).removeValue();
+            finish();
         });
 
-        mDatabase.child(taskID).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("task").child(taskID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 taskDetail = snapshot.getValue(Task.class);
-
-                String taskName = taskDetail.getTitle();
-                if(taskDetail.getSubTask() != null) {
-                    subtask = taskDetail.getSubTask();
-                }
-                else {
-                    subtask = new ArrayList<>();
-                }
-
-                if(subtask != null){
-                    if (subtask.size() > 5 && checkSize == 0) {
-                        ViewGroup.LayoutParams layoutParams = scrollViewSubTask.getLayoutParams();
-                        layoutParams.height = 540;
-                        scrollViewSubTask.setLayoutParams(layoutParams);
-                        checkSize += 1;
+                if (taskDetail != null) {
+                    String taskName = taskDetail.getTitle();
+                    if (taskDetail.getSubTask() != null) {
+                        subtask = taskDetail.getSubTask();
+                    } else {
+                        subtask = new ArrayList<>();
                     }
-                    itemSubTaskAdapter.setData(subtask);
-                    rcvSubTask.setAdapter(itemSubTaskAdapter);
-                }
 
-                tvTaskName.setText(taskName);
+                    if (subtask != null) {
+                        if (subtask.size() > 5 && checkSize == 0) {
+                            ViewGroup.LayoutParams layoutParams = scrollViewSubTask.getLayoutParams();
+                            layoutParams.height = 540;
+                            scrollViewSubTask.setLayoutParams(layoutParams);
+                            checkSize += 1;
+                        }
+                        itemSubTaskAdapter.setData(subtask);
+                        rcvSubTask.setAdapter(itemSubTaskAdapter);
+                    }
 
-                if(!taskDetail.isHasDueDate()){
-                    changeColorImageView(ivReminder, R.color.primary_color_tint40);
-                    changeColorImageView(ivReminderType, R.color.primary_color_tint40);
-                    changeColorImageView(ivRepeat, R.color.primary_color_tint40);
-                    changeColorImageView(ivPriority, R.color.primary_color_tint40);
+                    tvTaskName.setText(taskName);
 
-                    changeColorTextView(tvReminder, R.color.grey700);
-                    changeColorTextView(tvReminderType, R.color.grey700);
-                    changeColorTextView(tvRepeat, R.color.grey700);
-                    changeColorTextView(tvPriority, R.color.grey700);
-                    year = myCalendar.get(Calendar.YEAR);
-                    month = myCalendar.get(Calendar.MONTH);
-                    day = myCalendar.get(Calendar.DAY_OF_MONTH);
-                    hasDueDate = false;
-                }
-                if(taskDetail.isHasDueDate()){
-                    hasDueDate = true;
-                    tvShowDueDate.setText(taskDetail.getDueDate());
-                    String[] sDueDate = taskDetail.getDueDate().split("/");
-                    day = Integer.parseInt(sDueDate[0]);
-                    month = Integer.parseInt(sDueDate[1]) - 1;
-                    year = Integer.parseInt(sDueDate[2]);
                     if(taskDetail.getReminder() != null){
-                        tvShowReminder.setText(taskDetail.getReminder().getTimeReminder());
-                        if(taskDetail.getReminder().getTypeNotify() != null) {
-                            switch (taskDetail.getReminder().getTypeNotify()) {
-                                case NOTIFICATIONS:
-                                    tvShowReminderType.setText(getResources().getString(R.string.notification));
-                                    break;
-                                default:
-                                    tvShowReminderType.setText(getResources().getString(R.string.alarm));
-                                    break;
+                        reminder = taskDetail.getReminder();
+                    }
+                    if(taskDetail.getRepeat() != null){
+                        repeat = taskDetail.getRepeat();
+                    }
+
+
+                    hasDueDate = taskDetail.isHasDueDate();
+                    if (!hasDueDate) {
+                        changeColorImageView(ivReminder, R.color.primary_color_tint40);
+                        changeColorImageView(ivReminderType, R.color.primary_color_tint40);
+                        changeColorImageView(ivRepeat, R.color.primary_color_tint40);
+                        changeColorImageView(ivPriority, R.color.primary_color_tint40);
+
+                        changeColorTextView(tvReminder, R.color.grey700);
+                        changeColorTextView(tvReminderType, R.color.grey700);
+                        changeColorTextView(tvRepeat, R.color.grey700);
+                        changeColorTextView(tvPriority, R.color.grey700);
+                        changeColorTextView(tvShowReminder, R.color.grey700);
+                        changeColorTextView(tvShowReminderType, R.color.grey700);
+                        changeColorTextView(tvShowRepeat, R.color.grey700);
+                        changeColorTextView(tvShowPriority, R.color.grey700);
+                        year = myCalendar.get(Calendar.YEAR);
+                        month = myCalendar.get(Calendar.MONTH);
+                        day = myCalendar.get(Calendar.DAY_OF_MONTH);
+                    }
+                    if (hasDueDate) {
+                        tvShowDueDate.setText(taskDetail.getDueDate());
+                        String[] sDueDate = taskDetail.getDueDate().split("/");
+                        day = Integer.parseInt(sDueDate[0]);
+                        month = Integer.parseInt(sDueDate[1]) - 1;
+                        year = Integer.parseInt(sDueDate[2]);
+                        if (taskDetail.getReminder() != null) {
+                            tvShowReminder.setText(taskDetail.getReminder().getTimeReminder());
+                            if (taskDetail.getReminder().getTypeNotify() != null) {
+                                switch (taskDetail.getReminder().getTypeNotify()) {
+                                    case NOTIFICATIONS:
+                                        tvShowReminderType.setText(getResources().getString(R.string.notification));
+                                        break;
+                                    default:
+                                        tvShowReminderType.setText(getResources().getString(R.string.alarm));
+                                        break;
+                                }
                             }
                         }
                     }
-                }
-                if(taskDetail.getRepeat() != null){
-                    if(taskDetail.getRepeat().getType() != TypeRepeat.NO_REPEAT) {
-                        tvShowRepeat.setText(getResources().getString(R.string.yes));
+                    if (taskDetail.getRepeat() != null) {
+                        if (taskDetail.getRepeat().getType() != TypeRepeat.NO_REPEAT) {
+                            tvShowRepeat.setText(getResources().getString(R.string.yes));
+                        } else {
+                            tvShowRepeat.setText(getResources().getString(R.string.no));
+                        }
                     }
-                    else {
-                        tvShowRepeat.setText(getResources().getString(R.string.no));
-                    }
-                }
 
-                switch (taskDetail.getPriority()){
-                    case 1:
-                        tvShowPriority.setText(getResources().getString(R.string.high));
-                        ivShowPriority.setBackground(getResources().getDrawable(R.drawable.ic_circle_1));
-                        break;
-                    case 2:
-                        tvShowPriority.setText(getResources().getString(R.string.medium));
-                        ivShowPriority.setBackground(getResources().getDrawable(R.drawable.ic_circle_2));
-                        break;
-                    default:
-                        tvShowPriority.setText(getResources().getString(R.string.normal));
-                        ivShowPriority.setBackground(getResources().getDrawable(R.drawable.ic_circle_3));
-                        break;
-                }
-                if(taskDetail.getDescriptions() != null){
-                    noteInput.setText(taskDetail.getDescriptions());
+                    switch (taskDetail.getPriority()) {
+                        case 1:
+                            tvShowPriority.setText(getResources().getString(R.string.high));
+                            ivShowPriority.setBackground(getResources().getDrawable(R.drawable.ic_circle_1));
+                            break;
+                        case 2:
+                            tvShowPriority.setText(getResources().getString(R.string.medium));
+                            ivShowPriority.setBackground(getResources().getDrawable(R.drawable.ic_circle_2));
+                            break;
+                        default:
+                            tvShowPriority.setText(getResources().getString(R.string.normal));
+                            ivShowPriority.setBackground(getResources().getDrawable(R.drawable.ic_circle_3));
+                            break;
+                    }
+                    if (taskDetail.getDescriptions() != null) {
+                        noteInput.setText(taskDetail.getDescriptions());
+                    }
+                    if(taskDetail.getTag() != null){
+                        tag = taskDetail.getTag();
+                    }
+                    if(taskDetail.getTag() == null){
+                        tag = NO_TAG;
+                    }
+                    int spinnerPosition = arrayAdapter.getPosition(tag);
+                    addTag.setSelection(spinnerPosition);
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -403,7 +461,6 @@ public class TaskDetailActivity extends AppCompatActivity {
         popupMenu.show();
     }
 
-
     private void showEditTaskNameDialog(String taskID, String _taskName) {
         final Dialog dialog = createDialog(R.layout.dialog_input_tag);
 
@@ -419,16 +476,17 @@ public class TaskDetailActivity extends AppCompatActivity {
         btnDone.setOnClickListener(v -> {
             String newTaskName = taskName.getText().toString().trim();
             if (!TextUtils.isEmpty(newTaskName)) {
-                mDatabase.child(taskID).child("title").setValue(newTaskName);
+                tvTaskName.setText(newTaskName);
                 dialog.dismiss();
             } else {
-                Toast.makeText(this, R.string.update_fail, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.add_new_task_name_error, Toast.LENGTH_SHORT).show();
             }
 
         });
         dialog.show();
     }
-    private void showEditTaskNameDialog(String taskID) {
+
+    private void showAddSubTaskDialog(String taskID) {
         final Dialog dialog = createDialog(R.layout.dialog_input_tag);
 
         EditText taskName = dialog.findViewById(R.id.tagInput);
@@ -442,11 +500,20 @@ public class TaskDetailActivity extends AppCompatActivity {
             String newTaskName = taskName.getText().toString().trim();
             if (!TextUtils.isEmpty(newTaskName)) {
                 subtask.add(newTaskName);
+                if (subtask.size() > 5 && checkSize == 0) {
+                    ViewGroup.LayoutParams layoutParams = scrollViewSubTask.getLayoutParams();
+                    layoutParams.height = 540;
+                    scrollViewSubTask.setLayoutParams(layoutParams);
+                    checkSize += 1;
+                }
+                // focus vào item ở cuối list và thông báo dataset change để hiển thị
+                rcvSubTask.smoothScrollToPosition(subtask.size() - 1);
+                itemSubTaskAdapter.notifyDataSetChanged();
                 itemSubTaskAdapter.setData(subtask);
                 rcvSubTask.setAdapter(itemSubTaskAdapter);
                 dialog.dismiss();
             } else {
-                Toast.makeText(this, R.string.update_fail, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.add_new_tag_error_empty, Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -548,11 +615,6 @@ public class TaskDetailActivity extends AppCompatActivity {
 
     // SHOW POPUPMENU
     private void showPopUpMenu(Context context, View view, int menu, TextView tv) {
-        reminder = new Reminder();
-//        if (reminder.getTimeReminder() == null) {
-//            Toast.makeText(getContext(), R.string.error_reminder_type, Toast.LENGTH_SHORT).show();
-//            return;
-//        }
         PopupMenu popupMenu = new PopupMenu(context, view);
         popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
 
@@ -574,5 +636,98 @@ public class TaskDetailActivity extends AppCompatActivity {
 
     }
 
+    private void getData() {
+        tagList = new ArrayList<>();
+        tagListKey = new ArrayList<>();
+        tagList.add(NO_TAG);
+        tagListKey.add("0");
+        mDatabase.child("tag").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                String tagName = snapshot.getValue(String.class);
+                if(tagList != null && tagList.contains(ADD_NEW_TASK)){
+                    tagList.remove(ADD_NEW_TASK);
+                }
+                if(tagName != null){
+                    tagList.add(tagName);
+                    tagListKey.add(snapshot.getKey());
+//                    newTask.setTag(tagName);
+                }
+                tagList.add(ADD_NEW_TASK);
+                arrayAdapter.notifyDataSetChanged();
+            }
 
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                String tagName = snapshot.getValue(String.class);
+                String key = snapshot.getKey();
+                int i = tagListKey.indexOf(key);
+                if(tagName != null){
+                    tagList.set(i, tagName);
+                }
+                arrayAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                String tagName = snapshot.getValue(String.class);
+                String key = snapshot.getKey();
+                if(tagName == null || tagList == null || tagName.isEmpty()){
+                    return;
+                }
+                tagList.remove(tagName);
+                tagListKey.remove(key);
+                arrayAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        if(tagList.size() == 1){
+            tagList.add(ADD_NEW_TASK);
+        }
+    }
+
+    private void openAddNewTag(DatabaseReference mDatabase, Spinner spinner) {
+        final Dialog dialog = createDialog(R.layout.dialog_input_tag);
+
+        EditText tagInput = dialog.findViewById(R.id.tagInput);
+        TextView btnCancel = dialog.findViewById(R.id.tvBtnCancel);
+        TextView btnDone = dialog.findViewById(R.id.tvBtnDone);
+
+        btnCancel.setOnClickListener(v -> {
+            spinner.setSelection(0);
+            dialog.dismiss();
+        });
+        btnDone.setOnClickListener(v -> {
+            String newTagName = tagInput.getText().toString().trim();
+            if(!TextUtils.isEmpty(newTagName)) {
+                if(newTagName.length() > 50){
+                    Toast.makeText(this,R.string.add_new_tag_error,Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(tagList.contains(newTagName)){
+                    spinner.setSelection(spinner.getAdapter().getCount() - 2);
+                    Toast.makeText(this,R.string.add_new_tag_error_2,Toast.LENGTH_SHORT).show();
+                } else {
+                    String key = mDatabase.push().getKey();
+                    mDatabase.child("tag").child(key).setValue(newTagName);
+                    spinner.setSelection(spinner.getAdapter().getCount() - 1);
+                }
+                dialog.dismiss();
+
+            } else {
+                Toast.makeText(this,R.string.add_new_tag_error_empty,Toast.LENGTH_SHORT).show();
+            }
+
+        });
+        dialog.show();
+    }
 }

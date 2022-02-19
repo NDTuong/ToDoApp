@@ -17,13 +17,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.todo.R;
 import com.example.todooo.Adapter.FragmentAdapter;
 import com.example.todooo.Alarm.AlarmReceiver;
 import com.example.todooo.CustomDialog.BottomSheetAddTaskDialog;
+import com.example.todooo.Fragment.TaskFragment;
 import com.example.todooo.Model.Notification;
 import com.example.todooo.Model.Task;
 import com.example.todooo.Model.TypeNotifications;

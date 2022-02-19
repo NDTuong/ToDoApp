@@ -8,7 +8,7 @@
     <string name="menu_settings">Settings</string>
 
     <!--    Calendar Fragment-->
-    <string name="default_hello">Good morning,</string>
+    <string name="default_hello">Hi,</string>
     <string name="default_name">Nguyen Duy Tuong</string>
 
     <!--    Item task-->
@@ -99,7 +99,7 @@
     <string name="add_new_tag">Add New Tag</string>
 
     <!--    Add task error-->
-    <string name="add_new_task_error">Task Name Empty!!!</string>
+    <string name="add_new_task_name_error">Task Name Empty!!!</string>
     <string name="add_new_tag_error">The tag name must be less than 50 characters!</string>
     <string name="add_new_tag_error_empty">Tag name is empty!</string>
     <string name="add_to_database_error">Add Failure!!!</string>

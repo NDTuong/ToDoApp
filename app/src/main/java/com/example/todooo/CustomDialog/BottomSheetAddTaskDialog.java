@@ -269,7 +269,7 @@ public class BottomSheetAddTaskDialog extends BottomSheetDialogFragment {
                 if(!TextUtils.isEmpty(taskName)){
                     newTask.setTitle(taskName);
                 } else {
-                    Toast.makeText(getContext(), R.string.add_new_task_error, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.add_new_task_name_error, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 Log.d(TAG, "TASK INFO: \n" + newTask.toString());

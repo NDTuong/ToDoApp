@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
     android:id="@+id/container_body"
-    tools:context=".MainActivity">
+    tools:context="com.example.todooo.MainActivity">
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager2"

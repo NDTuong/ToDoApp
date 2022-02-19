@@ -76,6 +76,7 @@ public class TaskFragment extends Fragment implements RecycleViewTagAdapter.OnTa
 
         mDatabase = FirebaseDatabase.getInstance().getReference("todo_app/" + UID);
 
+
         rcvTask = view.findViewById(R.id.rcvTask);
         rcvTagList = view.findViewById(R.id.rcvListTag);
         ivTagManagement = view.findViewById(R.id.ivTagManagement);
@@ -251,7 +252,7 @@ public class TaskFragment extends Fragment implements RecycleViewTagAdapter.OnTa
                 }
                 if(isCompleted != task.isComplete()){
                     taskList.remove(task);
-                    rcvTagAdapter.notifyDataSetChanged();
+                    rcvViewTaskAdapter.notifyDataSetChanged();
                     return;
                 }
                 if (isAll) {
@@ -317,7 +318,7 @@ public class TaskFragment extends Fragment implements RecycleViewTagAdapter.OnTa
                         }
                     }
                 }
-                rcvTagAdapter.notifyDataSetChanged();
+                rcvViewTaskAdapter.notifyDataSetChanged();
             }
 
             @Override
