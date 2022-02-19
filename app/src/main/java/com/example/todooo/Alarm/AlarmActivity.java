@@ -4,6 +4,7 @@ package com.example.todooo.Alarm;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +16,7 @@ public class AlarmActivity extends AppCompatActivity {
 
     MediaPlayer mediaPlayer;
     Button btnClose;
+    TextView tvTitle, tvDescriptions;
     String id;
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
@@ -26,11 +28,15 @@ public class AlarmActivity extends AppCompatActivity {
 
         mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.jump_start);
         mediaPlayer.start();
-//        if(getIntent().getExtras() != null) {
-//            title.setText(getIntent().getStringExtra("TITLE"));
-//            description.setText(getIntent().getStringExtra("DESC"));
+
+        tvTitle = findViewById(R.id.tvTitle);
+        tvDescriptions = findViewById(R.id.tvDescriptions);
+
+        if(getIntent().getExtras() != null) {
+            tvTitle.setText(getIntent().getStringExtra("TITLE"));
+            tvDescriptions.setText(getIntent().getStringExtra("DESC"));
 //        id = getIntent().getStringExtra("ID");
-//        }
+        }
 
 //        mAuth = FirebaseAuth.getInstance();
 //        // Check if user is signed in (non-null) and update UI accordingly.

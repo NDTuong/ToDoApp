@@ -46,7 +46,7 @@ public class CalendarFragment extends Fragment {
     View view;
 
     CollapsibleCalendar collapsibleCalendar;
-    TextView tv;
+    TextView tvUserName;
     ImageView ivBack2Today;
 
     private RecyclerView rcvCalendar;
@@ -62,6 +62,7 @@ public class CalendarFragment extends Fragment {
 
     private final static String TAG = "Calendar Fragment";
     String UID;
+    String displayName;
 
 
     @Override
@@ -74,10 +75,14 @@ public class CalendarFragment extends Fragment {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             UID = currentUser.getUid();
+            displayName = currentUser.getDisplayName();
         } else {
             Intent intent = new Intent(getActivity(), LoginActivity.class);
             startActivity(intent);
         }
+
+        tvUserName = view.findViewById(R.id.tvUserName);
+        tvUserName.setText(displayName);
 
         mDatabase = FirebaseDatabase.getInstance().getReference("todo_app/" + UID + "/task");
 

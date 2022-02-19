@@ -44,6 +44,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,10 +63,10 @@ public class MainActivity extends AppCompatActivity {
     AlarmManager alarmManager;
 
     private final static String TAG = "MainActivity";
-    public static int count = 0;
+    public static int count = 1;
 
     Calendar today;
-    List<Task> updateTask = new ArrayList<>();
+    List<Task> updateTask;
     List<Long> listNotificationTime1;
     List<Long> listNotificationTime2;
     List<Notification> listNotifications1;
@@ -79,14 +81,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        LocaleHelper.setLocale(MainActivity.this, "en");
         setContentView(R.layout.activity_main);
         createNotificationChannel();
         // [CHECK ĐĂNG NHẬP CHƯA?]
         mAuth = FirebaseAuth.getInstance();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser == null){
+        if (currentUser == null) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
         } else {
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.icCalendar:
                         viewPager2.setCurrentItem(0);
                         break;
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
                         viewPager2.setCurrentItem(1);
                         break;
                     case R.id.icSettings:
-                        viewPager2.setCurrentItem(2) ;
+                        viewPager2.setCurrentItem(2);
                         break;
                 }
                 return true;
@@ -131,31 +132,28 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //LOAD DATA TASK FROM FIREBASE AND CREATE NOTIFICATIONS
-//        createAlarm("Noti 1", "note...", 0, 10000);
-//        createAlarm("Noti 2", "note2...", 0, 10000);
-//        createAlarm("Noti 4", "note4...", 0, 10000);
-//        createAlarm("Noti 3", "note3...", 0, 15000);
-//        createAlarm("Noti 5", "note5...", 0, 10000);
 
         today = Calendar.getInstance();
-        today.set(Calendar.MILLISECOND, 0);
-        today.set(Calendar.SECOND, 0);
-        today.set(Calendar.MINUTE, 0);
-        today.set(Calendar.HOUR_OF_DAY, 0);
+//        today.set(Calendar.MILLISECOND, 0);
+//        today.set(Calendar.SECOND, 0);
+//        today.set(Calendar.MINUTE, 0);
+//        today.set(Calendar.HOUR_OF_DAY, 0);
         mDatabase.child("task").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                mDatabase.child("notificationsList").removeValue();
-                for(DataSnapshot snap : snapshot.getChildren()){
+                updateTask = new ArrayList<>();
+                count = 1;
+//                mDatabase.child("notificationsList").removeValue();
+                for (DataSnapshot snap : snapshot.getChildren()) {
                     Task task = snap.getValue(Task.class);
                     String dueDate = task.getDueDate();
-                    if(dueDate != null){
+                    if (dueDate != null) {
                         int checkDueDate = compareDueDateWith2Day(dueDate);
                         Log.d(TAG, "CHECK DUEDATE: " + checkDueDate);
-                        switch (checkDueDate){
+                        switch (checkDueDate) {
                             case -1:
-                                if(task.getRepeat() != null){
-                                    switch (task.getRepeat().getType()){
+                                if (task.getRepeat() != null) {
+                                    switch (task.getRepeat().getType()) {
                                         case DAILY:
                                             String newDueDate = updateDueDateTask(task.getRepeat().getRepeatEvery(), dueDate, Calendar.DATE);
                                             task.setDueDate(newDueDate);
@@ -183,25 +181,25 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             case 1:
                             default:
-                                Notification notification = new Notification();
-                                notification.setID(task.getID());
-                                notification.setDueDate(convertStr2TimeInMil1(task.getDueDate()));
-                                notification.setTitle(task.getTitle());
-                                notification.setDesc(task.getDescriptions());
-                                if(task.getReminder() != null && task.getReminder().getTimeReminder() != null){
-                                    notification.setReminder(convertStr2TimeInMil2(task.getReminder().getTimeReminder()));
-                                    notification.setType(task.getReminder().getTypeNotify());
-                                } else {
-                                    notification.setReminder(0);
-                                    notification.setType(TypeNotifications.NOTIFICATIONS);
-                                }
-                                mDatabase.child("notificationsList").child(task.getID()).setValue(notification);
                         }
+                        Notification notification = new Notification();
+                        notification.setID(task.getID());
+                        notification.setDueDate(convertStr2TimeInMil1(task.getDueDate()));
+                        notification.setTitle(task.getTitle());
+                        notification.setDesc(task.getDescriptions());
+                        if (task.getReminder() != null && task.getReminder().getTimeReminder() != null) {
+                            notification.setReminder(convertStr2TimeInMil2(task.getReminder().getTimeReminder()));
+                            notification.setType(task.getReminder().getTypeNotify());
+                        } else {
+                            notification.setReminder(0);
+                            notification.setType(TypeNotifications.NOTIFICATIONS);
+                        }
+                        mDatabase.child("notificationsList").child(task.getID()).setValue(notification);
 
                     }
                 }
-                if(updateTask != null){
-                    for(Task t : updateTask){
+                if (updateTask != null) {
+                    for (Task t : updateTask) {
                         String taskID = t.getID();
                         mDatabase.child("task").child(taskID).setValue(t);
                     }
@@ -215,104 +213,67 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mDatabase.child("notificationsList").addValueEventListener(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.d(TAG, "onDataChange: vao");
-                listNotificationTime1 = new ArrayList<>();
-                listNotifications1 = new ArrayList<>();
-                listNotifications2 = new ArrayList<>();
-                listNotifications3 = new ArrayList<>();
-                List<Notification> listNotifications4 = new ArrayList<>();
-                List<Notification> listNotifications5 = new ArrayList<>();
-                listNotificationTime2 = new ArrayList<>();
-                long minTime1 = 164418840000000L;
-                long minTime2 = 164418840000000L;
-                long now = today.getTimeInMillis();
-                NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-//                notificationManager.cancel(NOTIFICATION_ID);
+                count = 1;
+                List<Notification> _listNotificationsRe = new ArrayList<>();
+                List<Notification> _listNotificationsDu = new ArrayList<>();
+
                 NotificationManagerCompat.from(MainActivity.this).cancelAll();
+
+                long now = today.getTimeInMillis();
                 for(DataSnapshot snap : snapshot.getChildren()){
                     Notification notification = snap.getValue(Notification.class);
-                    assert notification != null;
-                    if(notification.getReminder() != 0 && notification.getReminder() >= now){
-                        if(notification.getReminder() < minTime2){
-                            minTime2 = notification.getReminder();
-                            listNotificationTime2.clear();
-                            listNotifications2.clear();
-                            listNotificationTime2.add(notification.getReminder());
-                            listNotifications2.add(notification);
+                    if(notification!=null){
+                        if(notification.getDueDate() != 0 && notification.getDueDate() >= now){
+                            _listNotificationsDu.add(notification);
                         }
-                        if(notification.getReminder() == minTime2){
-                            listNotificationTime2.add(notification.getReminder());
-                            listNotifications2.add(notification);
+                        if(notification.getReminder() != 0 && notification.getReminder() >= now){
+                            _listNotificationsRe.add(notification);
                         }
-                    }
-                    if(notification.getDueDate() != 0 && notification.getDueDate() >= now){
-                        if(notification.getDueDate() < minTime1){
-                            minTime1 = notification.getDueDate();
-                            listNotificationTime1.clear();
-                            listNotifications1.clear();
-                            listNotificationTime1.add(notification.getDueDate());
-                            listNotifications1.add(notification);
-                        }
-                        if(notification.getDueDate() == minTime2){
-                            listNotificationTime1.add(notification.getDueDate());
-                            listNotifications1.add(notification);
-                        }
-                    }
-                    if(notification.getDueDate() < now && notification.getReminder() < now){
-                        listNotifications3.add(notification);
-                    }
-                    if(notification.getDueDate() < now){
-                        listNotifications4.add(notification);
-                    }
-                    if(notification.getReminder() < now){
-                        listNotifications5.add(notification);
-                    }
-                }
-                Log.d(TAG, "CHECK LIST NOTIFY 1" + listNotificationTime1.toString());
-                Log.d(TAG, "CHECK LIST NOTIFY 2" + listNotificationTime2.toString());
-                if(listNotificationTime1 != null && listNotificationTime1.size() > 0){
-                    for(int i = 0; i<listNotificationTime1.size(); i++){
-                        String title = listNotifications1.get(i).getTitle();
-                        String desc = listNotifications1.get(i).getDesc();
-                        int type = 0;
-                        if(listNotifications1.get(i).getType() == TypeNotifications.ALARM){
-                            type = 1;
-                        }
-                        String id = listNotifications1.get(i).getID();
-                        long time = listNotificationTime1.get(i);
-//                        createAlarm(title, desc, type, time, id);
-                    }
-                }
-                if(listNotificationTime2 != null && listNotificationTime2.size() > 0){
-                    for(int i = 0; i<listNotificationTime2.size(); i++){
-                        String title = listNotifications2.get(i).getTitle();
-                        String desc = listNotifications2.get(i).getDesc();
-                        int type = 0;
-                        if(listNotifications2.get(i).getType() == TypeNotifications.ALARM){
-                            type = 1;
-                        }
-                        String id = listNotifications2.get(i).getID();
-                        long time = listNotificationTime2.get(i);
-//                        createAlarm(title, desc, type, time, id);
                     }
                 }
 
-                if(listNotifications3 != null && listNotifications3.size() > 0){
-                    for(int i = 0; i<listNotificationTime2.size(); i++){
-                        mDatabase.child("notificationsList").child(listNotifications3.get(i).getID()).removeValue();
+                Collections.sort(_listNotificationsDu, (o1, o2) -> {
+                    // ## Ascending order
+                    return (o1.getDueDate() < o2.getDueDate()) ? -1 : ((o1.getDueDate() == o2.getDueDate()) ? 0 :1 );
+                });
+
+                Collections.sort(_listNotificationsRe, new Comparator<Notification>(){
+                    public int compare(Notification o1, Notification o2) {
+                        // ## Ascending order
+                        return (o1.getReminder() < o2.getReminder()) ? -1 : ((o1.getReminder() == o2.getReminder()) ? 0 :1 );
+                    }
+                });
+                Log.d(TAG, "DUELIST: " + _listNotificationsDu);
+                if(_listNotificationsDu != null && _listNotificationsDu.size() > 0){
+                    for(int i = 0; i<_listNotificationsDu.size(); i++){
+                        if(_listNotificationsDu.get(i).getDueDate() <= _listNotificationsDu.get(0).getDueDate()) {
+                            String title = _listNotificationsDu.get(i).getTitle();
+                            String desc = _listNotificationsDu.get(i).getDesc();
+                            int type = 0;
+                            String id = _listNotificationsDu.get(i).getID();
+                            long time = _listNotificationsDu.get(i).getDueDate();
+                            createAlarm(title, desc, type, time, id);
+                            Log.d(TAG, "DUE: " + title);
+                        }
                     }
                 }
-                if(listNotifications3 != null && listNotifications3.size() > 0){
-                    for(int i = 0; i<listNotificationTime2.size(); i++){
-                        mDatabase.child("notificationsList").child(listNotifications3.get(i).getID()).removeValue();
-                    }
-                }
-                if(listNotifications3 != null && listNotifications3.size() > 0){
-                    for(int i = 0; i<listNotificationTime2.size(); i++){
-                        mDatabase.child("notificationsList").child(listNotifications3.get(i).getID()).removeValue();
+
+                if(_listNotificationsRe != null && _listNotificationsRe.size() > 0){
+                    for(int i = 0; i<_listNotificationsRe.size(); i++) {
+                        if (_listNotificationsRe.get(i).getReminder() <= _listNotificationsRe.get(0).getReminder()) {
+                            String title = _listNotificationsRe.get(i).getTitle();
+                            String desc = _listNotificationsRe.get(i).getDesc();
+                            int type = 0;
+                            if (_listNotificationsRe.get(i).getType() == TypeNotifications.ALARM) {
+                                type = 1;
+                            }
+                            String id = _listNotificationsRe.get(i).getID();
+                            long time = _listNotificationsRe.get(i).getReminder();
+                            createAlarm(title, desc, type, time, id);
+                            Log.d(TAG, "RE: " + title);
+                        }
                     }
                 }
 
@@ -323,7 +284,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     private long convertStr2TimeInMil2(String timeReminder) {
@@ -343,20 +303,25 @@ public class MainActivity extends AppCompatActivity {
         alarmIntent.putExtra("DESC", desc);
         alarmIntent.putExtra("TYPE", type);
         alarmIntent.putExtra("ID", id);
-//        long cal = Calendar.getInstance().getTimeInMillis();
+        alarmIntent.putExtra("CODE", count);
+        Log.d(TAG, "COUNT: " + count);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this,count, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        // Alarm rings continuously until toggle button is turned off
         alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
         count++;
+
     }
 
     private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            CharSequence name = "Test Main Activity";
-            String description = "Testing...";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel("todo_app_notifications",name,importance);
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Todo";
+            String description = "Notifications of Todo app";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("todo_app_notifications", name, importance);
             channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
@@ -425,10 +390,10 @@ public class MainActivity extends AppCompatActivity {
         try {
             Calendar cal = Calendar.getInstance();
             cal.setTime(Objects.requireNonNull(DUE_DATE_FORMAT.parse(date)));
-            cal.set(Calendar.HOUR_OF_DAY, 9);
-            today.set(Calendar.MILLISECOND, 0);
-            today.set(Calendar.SECOND, 0);
-            today.set(Calendar.MINUTE, 50);
+            cal.set(Calendar.HOUR_OF_DAY, 16);
+            cal.set(Calendar.MILLISECOND, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MINUTE, 24);
             return  cal.getTimeInMillis();
         } catch (Exception e) {
             return 0;
