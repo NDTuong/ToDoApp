@@ -60,6 +60,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     .setAutoCancel(true)
                     .setDefaults(NotificationCompat.DEFAULT_ALL)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setGroup("TODO")
                     .setContentIntent(pendingIntent);
 
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);

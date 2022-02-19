@@ -390,10 +390,10 @@ public class MainActivity extends AppCompatActivity {
         try {
             Calendar cal = Calendar.getInstance();
             cal.setTime(Objects.requireNonNull(DUE_DATE_FORMAT.parse(date)));
-            cal.set(Calendar.HOUR_OF_DAY, 16);
+            cal.set(Calendar.HOUR_OF_DAY, 6);
             cal.set(Calendar.MILLISECOND, 0);
             cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MINUTE, 24);
+            cal.set(Calendar.MINUTE, 0);
             return  cal.getTimeInMillis();
         } catch (Exception e) {
             return 0;
