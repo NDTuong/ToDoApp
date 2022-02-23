@@ -275,17 +275,11 @@ public class BottomSheetAddTaskDialog extends BottomSheetDialogFragment {
                 Log.d(TAG, "TASK INFO: \n" + newTask.toString());
                 String key = mDatabase.push().getKey();
                 newTask.setID(key);
-                mDatabase.child("task").child(key).setValue(newTask).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        dismiss();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), R.string.add_to_database_error,Toast.LENGTH_SHORT).show();
-                    }
-                });
+                mDatabase.child("task").child(key).setValue(newTask)
+                        .addOnSuccessListener(unused -> dismiss())
+                        .addOnFailureListener(e ->
+                                Toast.makeText(getContext(), R.string.add_to_database_error,Toast.LENGTH_SHORT)
+                                        .show());
             }
         });
         return v;

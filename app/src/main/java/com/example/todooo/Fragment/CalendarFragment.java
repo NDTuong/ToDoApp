@@ -73,16 +73,15 @@ public class CalendarFragment extends Fragment {
         // Get current user ID
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            UID = currentUser.getUid();
-            displayName = currentUser.getDisplayName();
-        } else {
+        if (currentUser == null) {
             Intent intent = new Intent(getActivity(), LoginActivity.class);
             startActivity(intent);
+        } else {
+            UID = currentUser.getUid();
         }
 
         tvUserName = view.findViewById(R.id.tvUserName);
-        tvUserName.setText(displayName);
+        tvUserName.setText(currentUser.getDisplayName());
 
         mDatabase = FirebaseDatabase.getInstance().getReference("todo_app/" + UID + "/task");
 

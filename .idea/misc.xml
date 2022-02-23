@@ -25,6 +25,8 @@
         <entry key="..\:/TodoApp/app/src/main/res/layout/dialog_num_input.xml" value="0.2" />
         <entry key="..\:/TodoApp/app/src/main/res/layout/dialog_schedule_task.xml" value="0.2" />
         <entry key="..\:/TodoApp/app/src/main/res/layout/fragment_calendar.xml" value="0.2" />
+        <entry key="..\:/TodoApp/app/src/main/res/layout/fragment_settings.xml" value="0.2" />
+        <entry key="..\:/TodoApp/app/src/main/res/layout/fragment_task.xml" value="0.2" />
         <entry key="..\:/TodoApp/app/src/main/res/layout/item_calendar.xml" value="0.2" />
         <entry key="..\:/TodoApp/app/src/main/res/layout/item_subtask.xml" value="0.2" />
         <entry key="..\:/TodoApp/app/src/main/res/layout/searchable_list_dialog.xml" value="0.2" />

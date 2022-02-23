@@ -264,7 +264,7 @@ public class RepeatSettingDialog extends Dialog {
             // repeatState: 3 - MONTHLY
             repeatState = 3;
             // cập nhật lại state của các repeat type (màu của các type trên view)
-            int[] visibility = {0, 0, 8}; // 8: Visibility = Gone | 0:Visible
+            int[] visibility = {0, 8, 8}; // 8: Visibility = Gone | 0:Visible
             updateRepeatTypeSelected(repeatState, visibility, listRepeatType, tvNumRepeatEvery,
                     llRepeatEvery, llRepeatOn, llChooseDayOfWeek,
                     getContext().getResources().getString(R.string._1_month),

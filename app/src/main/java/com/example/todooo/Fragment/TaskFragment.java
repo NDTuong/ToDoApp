@@ -34,6 +34,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -165,8 +166,10 @@ public class TaskFragment extends Fragment implements RecycleViewTagAdapter.OnTa
                 String tagName = snapshot.getValue(String.class);
                 String key = snapshot.getKey();
                 int i = tagListKey.indexOf(key);
+                String oldTag = tagList.get(i+1);
                 if (tagName != null) {
-                    tagList.set(i, tagName);
+                    tagList.set(i+1, tagName);
+                    updateTagOfTask(oldTag, tagName);
                 }
                 rcvTagAdapter.notifyDataSetChanged();
             }
@@ -372,26 +375,36 @@ public class TaskFragment extends Fragment implements RecycleViewTagAdapter.OnTa
         popupMenu.show();
     }
 
-    public void refresh(){
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        if (Build.VERSION.SDK_INT >= 26) {
-            ft.setReorderingAllowed(false);
-        }
-        ft.detach(TaskFragment.this).attach(TaskFragment.this).commit();
-    }
+    private void updateTagOfTask(String o, String n){
+        ValueEventListener v = mDatabase.child("task").addValueEventListener(new ValueEventListener() {
+            List<Task> listTaskUpdate = new ArrayList<>();
+            List<String> listNewTag = new ArrayList<>();
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot snap : snapshot.getChildren()){
+                    Task t = snap.getValue(Task.class);
+                    if(t != null){
+                        if(t.getTag() != null){
+                            Log.d("AAAA", "CHECK EDIT TAG: " + o + "--" + t.getTag());
+                            if(t.getTag().equals(o)){
+                                listTaskUpdate.add(t);
+                                listNewTag.add(n);
+                            }
+                        }
+                    }
+                }
+                for(int _ = 0; _ < listTaskUpdate.size(); _++){
+                    Task tmp = listTaskUpdate.get(_);
+                    tmp.setTag(listNewTag.get(_));
+                    mDatabase.child("task").child(listTaskUpdate.get(_).getID()).setValue(tmp);
+                }
+            }
 
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        isBackFromB = true;
-//    }
-//
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-////        updateUI();
-//        if (isBackFromB){
-//            refresh();
-//        }
-//    }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        mDatabase.child("task").removeEventListener(v);
+    }
 }

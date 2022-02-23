@@ -131,13 +131,14 @@ public class SignUpActivity extends AppCompatActivity {
                             user.updateProfile(profileUpdates)
                                     .addOnCompleteListener(task1 -> {
                                         if (task1.isSuccessful()) {
-                                            Log.d(TAG, "User profile updated.");
+                                            progressBar.setVisibility(View.GONE);
+                                            Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+                                            startActivity(intent);
+                                        } else {
+                                            Log.d(TAG, "Something error.");
                                         }
                                     });
 
-                            progressBar.setVisibility(View.GONE);
-                            Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
-                            startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
